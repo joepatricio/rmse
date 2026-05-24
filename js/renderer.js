@@ -391,11 +391,11 @@ function exp_for_level(level, expParams) {
 	const acc_b = expParams[3];
 	return Math.round(
 		basis *
-			Math.pow(level - 1, 0.9 + acc_a / 250) *
-			level *
-			(level + 1) /
-			(6 + Math.pow(level, 2) / 50 / acc_b) +
-			(level - 1) * extra
+		Math.pow(level - 1, 0.9 + acc_a / 250) *
+		level *
+		(level + 1) /
+		(6 + Math.pow(level, 2) / 50 / acc_b) +
+		(level - 1) * extra
 	);
 }
 
@@ -612,11 +612,23 @@ function build_sections(json, context) {
 	// Variables section
 	if ('variables' in json) {
 		let var_ctx = {};
-		if (context['variables']) {
-			let var_json = JSON.parse(context['variables']);
-			var_ctx = var_json.variables;
+		let sys_data = context['system'] || context['variables'];
+		if (sys_data) {
+			let sys_json = JSON.parse(sys_data);
+			var_ctx = sys_json.variables;
 		}
 		load_array_section('Variables', get_rm_arr(json['variables'], '_data'), sections, var_ctx);
+	}
+
+	// Switches section
+	if ('switches' in json) {
+		let switch_ctx = {};
+		let sys_data = context['system'] || context['variables'];
+		if (sys_data) {
+			let sys_json = JSON.parse(sys_data);
+			switch_ctx = sys_json.switches;
+		}
+		load_array_section('Switches', get_rm_arr(json['switches'], '_data'), sections, switch_ctx);
 	}
 
 	return sections;

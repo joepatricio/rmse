@@ -222,7 +222,7 @@ function get_context(file_path, rm_root) {
 		items: path.join(datadir, 'Items.json'),
 		armors: path.join(datadir, 'Armors.json'),
 		weapons: path.join(datadir, 'Weapons.json'),
-		variables: path.join(datadir, 'System.json'),
+		system: path.join(datadir, 'System.json'),
 		actors: path.join(datadir, 'Actors.json'),
 		classes: path.join(datadir, 'Classes.json')
 	};
