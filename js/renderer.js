@@ -495,7 +495,7 @@ function load_array_section(name, json_parent, section_arr, ctx) {
 
 	if (json_parent.length > 0) {
 		json_parent.forEach((value, idx) => {
-			if (value) {
+			if (value != null) {
 				// Perform context lookup, if available
 				let name = String(idx);
 				if (ctx[idx]) {
@@ -612,9 +612,8 @@ function build_sections(json, context) {
 	// Variables section
 	if ('variables' in json) {
 		let var_ctx = {};
-		let sys_data = context['system'] || context['variables'];
-		if (sys_data) {
-			let sys_json = JSON.parse(sys_data);
+		if (context['system']) {
+			let sys_json = JSON.parse(context['system']);
 			var_ctx = sys_json.variables;
 		}
 		load_array_section('Variables', get_rm_arr(json['variables'], '_data'), sections, var_ctx);
@@ -623,9 +622,8 @@ function build_sections(json, context) {
 	// Switches section
 	if ('switches' in json) {
 		let switch_ctx = {};
-		let sys_data = context['system'] || context['variables'];
-		if (sys_data) {
-			let sys_json = JSON.parse(sys_data);
+		if (context['system']) {
+			let sys_json = JSON.parse(context['system']);
 			switch_ctx = sys_json.switches;
 		}
 		load_array_section('Switches', get_rm_arr(json['switches'], '_data'), sections, switch_ctx);
