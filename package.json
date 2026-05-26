@@ -33,5 +33,8 @@
 		],
 		"coverageDirectory": "coverage",
 		"verbose": true
+	},
+	"dependencies": {
+		"unrs-resolver": "^1.12.2"
 	}
 }
