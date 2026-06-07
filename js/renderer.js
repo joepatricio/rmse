@@ -17,15 +17,26 @@ function set_text(selector, text) {
  * The item owns the ability to update its value by reading from the DOM and
  * then writing to the JSON object representing the savefile.
  */
+
+// Back when Marshal had true, false, and nil which has somewhat been replaced with null.
+const RMBoolean = {
+	True: true,
+	False: false,
+	Nil: 'nil',
+};
+
 class value_item {
 	constructor(owner, field, label) {
 		this.curr_val = owner[field];
 		this.jobj = owner;
 		this.field = field;
 		this.type = typeof owner[field];
-		// In JavaScript, arrays are objects...need an extra pass
-		if (this.type === 'object' && Array.isArray(owner[field])) {
-			this.type = 'array';
+		if (owner[field] === RMBoolean.Nil) {
+			this.type = 'boolean';
+		}
+		// Extra pass to check between object types
+		if (this.type === 'object'&& Array.isArray(owner[field])) {
+				this.type = 'array';
 		}
 		this.labeltext = label;
 	}
@@ -55,10 +66,10 @@ class value_item {
 		if (this.type === 'number') {
 			newval = Number(this.input_elem.value);
 			if (isNaN(newval)) {
+				newval = null;
 				console.warn(
 					`Invalid number input for ${this.labeltext}: "${this.input_elem.value}"`
 				);
-				// Keep the original value if input is invalid
 				return;
 			}
 		} else if (this.type === 'boolean') {
@@ -68,7 +79,10 @@ class value_item {
 				newval = true;
 			} else if (val === 'false' || val === '0') {
 				newval = false;
+			} else if (val === RMBoolean.Nil) {
+				newval = null;
 			} else {
+				newval = null;
 				console.warn(
 					`Invalid boolean input for ${this.labeltext}: "${this.input_elem.value}"`
 				);
@@ -488,22 +502,20 @@ function load_section(name, json_parent, section_arr, ctx, extras) {
  *
  * This function is almost the same as the above, with two differences:
  *   1. It iterates over an array instead of object entries
- *   2. It ignores entries whose value is null
+ *   2. It ignores entries whose value is null (not anymore in this fork)
  */
-function load_array_section(name, json_parent, section_arr, ctx) {
+function load_array_section(name, json_parent, section_arr, ctx, is_switch = false) {
 	let section_obj = new section(name);
 
 	if (json_parent.length > 0) {
-		json_parent.forEach((value, idx) => {
-			if (value != null) {
-				// Perform context lookup, if available
-				let name = String(idx);
-				if (ctx[idx]) {
-					name = ctx[idx];
-				}
-				// Create the item in the section
-				section_obj.add_item(new value_item(json_parent, idx, name));
+		ctx.forEach((label, idx) => {
+			if(json_parent[idx] == null) {
+				json_parent[idx] = is_switch ? RMBoolean.Nil : json_parent[idx] = NaN;
 			}
+			if(label == null || label.length === 0) {
+				label = String(idx);
+			}
+			section_obj.add_item(new value_item(json_parent, idx, label));
 		});
 		section_arr.push(section_obj);
 	}
@@ -626,12 +638,13 @@ function build_sections(json, context) {
 			let sys_json = JSON.parse(context['system']);
 			switch_ctx = sys_json.switches;
 		}
-		load_array_section('Switches', get_rm_arr(json['switches'], '_data'), sections, switch_ctx);
+		load_array_section('Switches', get_rm_arr(json['switches'], '_data'), sections, switch_ctx, true);
 	}
 
 	return sections;
 }
 
+// TODO: Add option to hide/show null values
 /**
  * The "palette" is the floating div containing the buttons the user can use to
  * (for example) save changes and otherwise interact with the system.

@@ -1,3 +1,11 @@
+## THIS IS A FORK
+
+This is a more powerful fork that allows editing null or undefined variables and switches provided that context is available from System.json. This is done by initializing variables to NaN/'nil' whenever variables are null or undefined in the savefile but the index is still within the scope of the provided system context (e.g. if the save only has 20 variables but the system provides 200 possible variables, then it will display all 200 variables and initialize all null/undefined variables to NaN.). Variables that are originally undefined will be set upon save, so this may break some games. You have backups in case I messed up your save (top right of UI). Contributions are very much welcome.
+
+As of now, this fork only supports this "unsafe" method of saving. Possible improvements may be to allow variables to be explicitly set to undefined. The main challenge here is that the value_item constructor requires a non-null field to infer this.type when we want to create and store null and undefined fields.
+
+Support for older savefiles using RGSS will be difficult because there are no good Ruby Marshal deserializers for JavaScipt. It would be really nice, but it has not been easy so far. I see this going two ways (and I plan to do neither), a) write a Ruby Mashal serial/deserializer in JavaScript or b) let JavaScript run a Ruby script for serial/deserialization.
+
 # RPGMaker Save Editor
 
 This is a tool for editing RPGMaker save files. It should support save files written by both RPG Maker MV and MZ. Support for older versions is not planned.
@@ -9,7 +17,7 @@ It uses Node.js for the backend and Electron for the GUI, which means you can in
 ### Clone the repository
 
 ```
-git clone https://github.com/nathan-b/rmse
+git clone https://github.com/joepatricio/rmse
 ```
 
 ### Install dependencies
