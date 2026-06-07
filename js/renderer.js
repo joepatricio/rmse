@@ -510,7 +510,7 @@ function load_array_section(name, json_parent, section_arr, ctx, is_switch = fal
 	if (json_parent.length > 0) {
 		ctx.forEach((label, idx) => {
 			if(json_parent[idx] == null) {
-				json_parent[idx] = is_switch ? RMBoolean.Nil : json_parent[idx] = NaN;
+				json_parent[idx] = is_switch ? RMBoolean.Nil : NaN;
 			}
 			if(label == null || label.length === 0) {
 				label = String(idx);
